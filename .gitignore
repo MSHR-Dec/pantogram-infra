@@ -1,6 +1,6 @@
 .idea
 
-terraform/.terraform/
+.terraform/
 terraform.tfvars
 backend.cfg
 *.log
