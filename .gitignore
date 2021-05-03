@@ -4,6 +4,3 @@
 terraform.tfvars
 backend.cfg
 *.log
-
-terraform/env/prd/.kube/config.yaml
-terraform/modules/alb/templates/aws_alb_ingress_controller.yaml
