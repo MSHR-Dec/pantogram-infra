@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: timeseries
+spec:
+  template:
+    spec:
+      containers:
+      - name: timeseries
+        envFrom:
+          - secretRef:
+              name: timeseries

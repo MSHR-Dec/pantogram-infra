@@ -1,0 +1,17 @@
+namespace: pantogram
+
+bases:
+  - "../../base"
+
+images:
+  - name: repository
+    newName: 192.168.0.10:5000/mysql
+    newTag: v0.0.0
+
+patchesStrategicMerge:
+  - "deployment.yaml"
+
+secretGenerator:
+- name: mysql
+  envs:
+  - .env

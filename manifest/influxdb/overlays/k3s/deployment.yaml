@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb
+spec:
+  template:
+    spec:
+      containers:
+      - name: influxdb
+        envFrom:
+          - secretRef:
+              name: influxdb

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - name: api
+        image: repository:tag
+        env:
+          - name: DATASTORE
+            value: "datastore:8080"
+          - name: TIMESERIES
+            value: "timeseries:8081"
