@@ -4,3 +4,5 @@
 terraform.tfvars
 backend.cfg
 *.log
+
+.env
