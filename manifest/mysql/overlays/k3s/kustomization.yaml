@@ -6,7 +6,7 @@ bases:
 images:
   - name: repository
     newName: 192.168.0.10:5000/mysql
-    newTag: v0.0.0
+    newTag: v0.0.1
 
 patchesStrategicMerge:
   - "deployment.yaml"

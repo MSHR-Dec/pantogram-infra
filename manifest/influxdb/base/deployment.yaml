@@ -16,3 +16,10 @@ spec:
         image: repository:tag
         ports:
           - containerPort: 8086
+        volumeMounts:
+          - mountPath: /var/lib/influxdb
+            name: data
+      volumes:
+        - name: data
+          emptyDir:
+            {}

@@ -10,3 +10,5 @@ spec:
         envFrom:
           - secretRef:
               name: mysql
+        securityContext:
+          runAsUser: 1000
