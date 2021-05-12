@@ -1,0 +1,16 @@
+# resources:
+  # - "github.com/kubernetes-sigs/metrics-server/manifests/release"
+  # - "https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.4/components.yaml"
+
+# images:
+#   - name: k8s.gcr.io/metrics-server/metrics-server
+#     newName: k8s.gcr.io/metrics-server/metrics-server
+#     newTag: "v0.4.4"
+
+# patchesJson6902:
+#   - target:
+#       group: apps
+#       kind: Deployment
+#       name: metrics-server
+#       version: v1
+#     path: deployment_patch.yaml

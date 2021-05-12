@@ -1,0 +1,15 @@
+# - op: add
+#   path: "/spec/template/spec/containers/0/args/5"
+#   value: "--v=2"
+
+# - op: add
+#   path: "/spec/template/spec/containers/0/args/6"
+#   value: "--kubelet-insecure-tls"
+
+# - op: add
+#   path: "/spec/template/spec/hostNetwork"
+#   value: true
+
+# - op: replace
+#   path: "/spec/template/spec/containers/0/args/"
+#   value: "--v=2"
