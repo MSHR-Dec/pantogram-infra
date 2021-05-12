@@ -3,7 +3,8 @@ variable "profile" {}
 variable "region" {}
 
 // module
-variable "cidr" {}
+variable "nw_addr" {}
 variable "domain" {}
 variable "public_key" {}
 variable "allow_ip" {}
+variable "node_port" {}

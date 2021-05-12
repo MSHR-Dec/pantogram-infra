@@ -1,13 +1,14 @@
 locals {
-  network_modifier = ["public", "private"]
-  server           = ["k3s-server01"]
-  agent            = ["k3s-agent01", "k3s-agent02"]
-  instances        = concat(local.server, local.agent)
+  cidr      = format("%s/24", var.nw_addr)
+  k3s_sg    = ["k3s-server-sg", "k3s-agent-sg"]
+  server    = ["k3s-server01"]
+  agent     = ["k3s-agent01", "k3s-agent02"]
+  instances = concat(local.server, local.agent)
 }
 
 // VPC
 resource "aws_vpc" "vpc" {
-  cidr_block           = var.cidr
+  cidr_block           = local.cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
 
@@ -18,12 +19,12 @@ resource "aws_vpc" "vpc" {
 
 // Subnet
 resource "aws_subnet" "subnet" {
-  count      = length(local.network_modifier)
-  cidr_block = cidrsubnet(var.cidr, 8, count.index)
+  count      = min(3, length(local.agent))
+  cidr_block = cidrsubnet(local.cidr, 4, count.index)
   vpc_id     = aws_vpc.vpc.id
 
   tags = {
-    Name = format("k3s-%s", element(local.network_modifier, count.index))
+    Name = format("k3s-subnet-0%d", count.index + 1)
   }
 }
 
@@ -36,45 +37,24 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-// Nat Gateway
-resource "aws_eip" "nat" {
-  vpc = true
-
-  tags = {
-    Name = "k3s-nat-eip"
-  }
-}
-
-resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.subnet[index(local.network_modifier, "public")].id
-
-  tags = {
-    Name = "k3s-nat"
-  }
-}
-
 // Route Table
 resource "aws_route_table" "rtb" {
-  count  = length(local.network_modifier)
   vpc_id = aws_vpc.vpc.id
 
   tags = {
-    Name = format("k3s-%s", element(local.network_modifier, count.index))
+    Name = "k3s-rtb"
   }
 }
 
 resource "aws_route" "route" {
-  count                  = length(local.network_modifier)
-  route_table_id         = aws_route_table.rtb[count.index].id
+  route_table_id         = aws_route_table.rtb.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = element(local.network_modifier, count.index) == "public" ? aws_internet_gateway.igw.id : null
-  nat_gateway_id         = element(local.network_modifier, count.index) == "private" ? aws_nat_gateway.nat.id : null
+  gateway_id             = aws_internet_gateway.igw.id
 }
 
 resource "aws_route_table_association" "route_assoc" {
-  count          = length(local.network_modifier)
-  route_table_id = aws_route_table.rtb[count.index].id
+  count          = min(3, length(local.agent))
+  route_table_id = aws_route_table.rtb.id
   subnet_id      = aws_subnet.subnet[count.index].id
 }
 
@@ -165,8 +145,8 @@ resource "aws_instance" "instance" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t3.micro"
   key_name               = aws_key_pair.k3s.id
-  vpc_security_group_ids = can(regex("server", element(local.instances, count.index))) ? [aws_security_group.k3s[index(local.network_modifier, "public")].id] : [aws_security_group.k3s[index(local.network_modifier, "private")].id]
-  subnet_id              = can(regex("server", element(local.instances, count.index))) ? aws_subnet.subnet[index(local.network_modifier, "public")].id : aws_subnet.subnet[index(local.network_modifier, "private")].id
+  vpc_security_group_ids = can(regex("server", element(local.instances, count.index))) ? [aws_security_group.k3s[index(local.k3s_sg, "k3s-server-sg")].id] : [aws_security_group.k3s[index(local.k3s_sg, "k3s-agent-sg")].id]
+  subnet_id              = aws_subnet.subnet[count.index % min(3, length(local.agent))].id
 
   root_block_device {
     volume_type = "gp2"
@@ -195,15 +175,16 @@ resource "aws_eip_association" "k3s" {
 
 // EC2 Security Group
 resource "aws_security_group" "k3s" {
-  count  = length(local.network_modifier)
+  count  = length(local.k3s_sg)
   vpc_id = aws_vpc.vpc.id
+
   tags = {
-    Name = element(local.network_modifier, count.index) == "public" ? "k3s-server-sg" : "k3s-agent-sg"
+    Name = element(local.k3s_sg, count.index)
   }
 }
 
 resource "aws_security_group_rule" "k3s_out" {
-  count             = length(local.network_modifier)
+  count             = length(local.k3s_sg)
   security_group_id = aws_security_group.k3s[count.index].id
   type              = "egress"
   from_port         = 0
@@ -216,7 +197,7 @@ resource "aws_security_group_rule" "k3s_out" {
 resource "aws_security_group_rule" "server_ssh" {
   from_port         = 22
   protocol          = "tcp"
-  security_group_id = aws_security_group.k3s[index(local.network_modifier, "public")].id
+  security_group_id = aws_security_group.k3s[index(local.k3s_sg, "k3s-server-sg")].id
   to_port           = 22
   type              = "ingress"
   cidr_blocks       = var.allow_ip
@@ -225,7 +206,7 @@ resource "aws_security_group_rule" "server_ssh" {
 resource "aws_security_group_rule" "server_https" {
   from_port         = 6443
   protocol          = "tcp"
-  security_group_id = aws_security_group.k3s[index(local.network_modifier, "public")].id
+  security_group_id = aws_security_group.k3s[index(local.k3s_sg, "k3s-server-sg")].id
   to_port           = 6443
   type              = "ingress"
   cidr_blocks       = var.allow_ip
@@ -234,16 +215,16 @@ resource "aws_security_group_rule" "server_https" {
 resource "aws_security_group_rule" "server_agent" {
   from_port                = 0
   protocol                 = "all"
-  source_security_group_id = aws_security_group.k3s[index(local.network_modifier, "private")].id
+  source_security_group_id = aws_security_group.k3s[index(local.k3s_sg, "k3s-agent-sg")].id
   to_port                  = 65535
   type                     = "ingress"
-  security_group_id        = aws_security_group.k3s[index(local.network_modifier, "public")].id
+  security_group_id        = aws_security_group.k3s[index(local.k3s_sg, "k3s-server-sg")].id
 }
 
 resource "aws_security_group_rule" "server_self" {
   from_port         = 0
   protocol          = "all"
-  security_group_id = aws_security_group.k3s[index(local.network_modifier, "public")].id
+  security_group_id = aws_security_group.k3s[index(local.k3s_sg, "k3s-server-sg")].id
   to_port           = 65535
   type              = "ingress"
   self              = true
@@ -253,16 +234,16 @@ resource "aws_security_group_rule" "server_self" {
 resource "aws_security_group_rule" "agent_server" {
   from_port                = 0
   protocol                 = "all"
-  security_group_id        = aws_security_group.k3s[index(local.network_modifier, "private")].id
+  security_group_id        = aws_security_group.k3s[index(local.k3s_sg, "k3s-agent-sg")].id
   to_port                  = 65535
   type                     = "ingress"
-  source_security_group_id = aws_security_group.k3s[index(local.network_modifier, "public")].id
+  source_security_group_id = aws_security_group.k3s[index(local.k3s_sg, "k3s-server-sg")].id
 }
 
 resource "aws_security_group_rule" "agent_self" {
   from_port         = 0
   protocol          = "all"
-  security_group_id = aws_security_group.k3s[index(local.network_modifier, "private")].id
+  security_group_id = aws_security_group.k3s[index(local.k3s_sg, "k3s-agent-sg")].id
   to_port           = 65535
   type              = "ingress"
   self              = true
@@ -285,4 +266,128 @@ resource "aws_route53_record" "k3s_agent" {
   zone_id = aws_route53_zone.private.zone_id
   ttl     = 300
   records = [aws_instance.instance[index(local.instances, element(local.agent, count.index))].private_ip]
+}
+
+// ALB
+resource "aws_alb" "alb" {
+  name                       = "k3s-alb"
+  subnets                    = aws_subnet.subnet.*.id
+  security_groups            = [aws_security_group.alb.id]
+  internal                   = false
+  enable_deletion_protection = false
+}
+
+resource "aws_alb_listener" "https" {
+  load_balancer_arn = aws_alb.alb.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2015-05"
+  certificate_arn   = aws_acm_certificate.acm.arn
+
+  default_action {
+    target_group_arn = aws_alb_target_group.tg.arn
+    type             = "forward"
+  }
+}
+
+resource "aws_alb_listener_rule" "http" {
+  listener_arn = aws_alb_listener.https.arn
+
+  action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+
+  condition {
+    host_header {
+      values = ["*"]
+    }
+  }
+}
+
+resource "aws_alb_target_group" "tg" {
+  name              = "k3s-tg"
+  port              = var.node_port
+  protocol          = "HTTP"
+  proxy_protocol_v2 = false
+  vpc_id            = aws_vpc.vpc.id
+
+  health_check {
+    interval            = 300
+    path                = "/"
+    port                = var.node_port
+    protocol            = "HTTP"
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    matcher             = 302
+  }
+}
+
+resource "aws_lb_target_group_attachment" "tg" {
+  count            = length(local.agent)
+  target_group_arn = aws_alb_target_group.tg.arn
+  target_id        = aws_instance.instance[count.index].id
+  port             = var.node_port
+}
+
+resource "aws_security_group" "alb" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name = "k3s-alb-sg"
+  }
+}
+
+resource "aws_security_group_rule" "alb_out" {
+  security_group_id = aws_security_group.alb.id
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "all"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "https" {
+  from_port         = 443
+  protocol          = "tcp"
+  security_group_id = aws_security_group.alb.id
+  to_port           = 443
+  type              = "ingress"
+  cidr_blocks       = var.allow_ip
+}
+
+resource "aws_security_group_rule" "http" {
+  from_port         = 80
+  protocol          = "tcp"
+  security_group_id = aws_security_group.alb.id
+  to_port           = 80
+  type              = "ingress"
+  cidr_blocks       = var.allow_ip
+}
+
+resource "aws_security_group_rule" "agent_alb" {
+  from_port                = var.node_port
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.k3s[index(local.k3s_sg, "k3s-agent-sg")].id
+  to_port                  = var.node_port
+  type                     = "ingress"
+  source_security_group_id = aws_security_group.alb.id
+}
+
+resource "aws_route53_record" "alb" {
+  zone_id = data.aws_route53_zone.public.zone_id
+  name    = var.domain
+  type    = "A"
+
+  alias {
+    name                   = aws_alb.alb.dns_name
+    zone_id                = aws_alb.alb.zone_id
+    evaluate_target_health = true
+  }
 }
