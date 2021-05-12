@@ -1,6 +1,6 @@
-# resources:
+resources:
   # - "github.com/kubernetes-sigs/metrics-server/manifests/release"
-  # - "https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.4/components.yaml"
+  - "https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.4/components.yaml"
 
 # images:
 #   - name: k8s.gcr.io/metrics-server/metrics-server
