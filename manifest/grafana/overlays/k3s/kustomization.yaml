@@ -1,0 +1,12 @@
+namespace: pantogram
+
+bases:
+  - "../../base"
+
+resources:
+  - "configmap.yaml"
+
+images:
+  - name: repository
+    newName: grafana/grafana
+    newTag: 7.4.3

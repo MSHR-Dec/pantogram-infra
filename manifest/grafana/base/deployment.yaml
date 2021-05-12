@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: repository:tag
+        ports:
+          - containerPort: 3000
+        volumeMounts:
+          - mountPath: /etc/grafana/provisioning/datasources/influxdb.yaml
+            name: influxdb
+            subPath: influxdb.yaml
+      volumes:
+        - name: influxdb
+          configMap:
+            name: influxdb
