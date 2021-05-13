@@ -16,3 +16,21 @@ spec:
         image: repository:tag
         ports:
           - containerPort: 8080
+        command:
+          - /usr/local/bin/run.sh
+        readinessProbe:
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:8080"]
+          initialDelaySeconds: 5
+        livenessProbe:
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:8080"]
+          initialDelaySeconds: 15
+        volumeMounts:
+          - name: run-sh
+            mountPath: /usr/local/bin
+      volumes:
+        - name: run-sh
+          configMap:
+            name: datastore-sh
+            defaultMode: 0755

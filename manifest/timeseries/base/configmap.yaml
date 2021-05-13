@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: timeseries-sh
+data:
+  run.sh: |
+    #! /bin/sh
+
+    while true; do
+        code=$(curl -LI -XGET http://influxdb:8086/health -o /dev/null -w '%{http_code}' -s)
+        if [ $code == 200 ]; then
+          break
+        fi
+        echo 'waiting for Influxdb'
+        sleep 2
+    done
+
+    echo "Influxdb is now running!"
+    exec /main
