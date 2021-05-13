@@ -16,11 +16,3 @@ spec:
         image: repository:tag
         ports:
           - containerPort: 3000
-        volumeMounts:
-          - mountPath: /etc/grafana/provisioning/datasources/influxdb.yaml
-            name: influxdb
-            subPath: influxdb.yaml
-      volumes:
-        - name: influxdb
-          configMap:
-            name: influxdb
