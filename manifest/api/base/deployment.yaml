@@ -12,10 +12,10 @@ spec:
         app: api
     spec:
       containers:
-      - name: api
-        image: repository:tag
+      - name: app
+        image: app-repo:tag
         env:
           - name: DATASTORE
-            value: "datastore:8080"
+            value: "datastore:15001"
           - name: TIMESERIES
-            value: "timeseries:8081"
+            value: "timeseries:15001"

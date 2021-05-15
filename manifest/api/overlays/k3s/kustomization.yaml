@@ -4,6 +4,9 @@ bases:
   - "../../base"
 
 images:
-  - name: repository
+  - name: app-repo
     newName: 192.168.0.10:5000/api
     newTag: v0.0.0
+
+patchesStrategicMerge:
+  - "deployment.yaml"

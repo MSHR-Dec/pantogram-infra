@@ -3,8 +3,11 @@ kind: Service
 metadata:
   name: datastore
 spec:
+  clusterIP: None
   selector:
     app: datastore
   ports:
-  - port: 8080
-    targetPort: 8080
+  - name: grpc
+    port: 15001
+    targetPort: 15001
+    protocol: TCP

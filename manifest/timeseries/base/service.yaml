@@ -3,8 +3,11 @@ kind: Service
 metadata:
   name: timeseries
 spec:
+  clusterIP: None
   selector:
     app: timeseries
   ports:
-  - port: 8081
-    targetPort: 8081
+  - name: grpc
+    port: 15001
+    targetPort: 15001
+    protocol: TCP

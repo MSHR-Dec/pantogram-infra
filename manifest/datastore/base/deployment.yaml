@@ -12,8 +12,19 @@ spec:
         app: datastore
     spec:
       containers:
-      - name: datastore
-        image: repository:tag
+      - name: envoy
+        image: envoy-repo:latest
+        volumeMounts:
+          - name: envoy
+            mountPath: /etc/envoy
+        command: ["envoy", "-c", "/etc/envoy/envoy.yaml"]
+        ports:
+          - name: envoy
+            containerPort: 15001
+          - name: envoy-admin
+            containerPort: 10001
+      - name: app
+        image: app-repo:tag
         ports:
           - containerPort: 8080
         command:
@@ -30,6 +41,9 @@ spec:
           - name: run-sh
             mountPath: /usr/local/bin
       volumes:
+        - name: envoy
+          configMap:
+            name: envoy-datastore
         - name: run-sh
           configMap:
             name: datastore-sh

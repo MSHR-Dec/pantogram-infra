@@ -6,7 +6,8 @@ spec:
   template:
     spec:
       containers:
-      - name: datastore
+      - name: app
+        imagePullPolicy: Always
         envFrom:
           - secretRef:
               name: datastore

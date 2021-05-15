@@ -4,7 +4,10 @@ bases:
   - "../../base"
 
 images:
-  - name: repository
+  - name: envoy-repo
+    newName: envoyproxy/envoy
+    newTag: v1.18-latest
+  - name: app-repo
     newName: 192.168.0.10:5000/datastore
     newTag: v0.0.2
 
