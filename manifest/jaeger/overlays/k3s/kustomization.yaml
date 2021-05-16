@@ -1,0 +1,12 @@
+namespace: pantogram-system
+
+bases:
+  - "../../base"
+
+resources:
+  - "service.yaml"
+
+images:
+  - name: jaeger-repo
+    newName: jaegertracing/all-in-one
+    newTag: "1.22"
