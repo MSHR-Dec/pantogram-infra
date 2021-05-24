@@ -17,7 +17,7 @@ spec:
         volumeMounts:
           - name: envoy
             mountPath: /etc/envoy
-        command: ["envoy", "-c", "/etc/envoy/envoy.yaml"]
+        command: ["envoy", "-c", "/etc/envoy/envoy.yaml", "--service-cluster", "timeseries", "--service-node", "timeseries"]
         ports:
           - name: envoy
             containerPort: 15001

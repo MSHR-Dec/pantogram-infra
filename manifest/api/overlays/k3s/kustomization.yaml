@@ -9,7 +9,7 @@ images:
     newTag: v1.18-latest
   - name: app-repo
     newName: 192.168.0.10:5000/api
-    newTag: v0.0.0
+    newTag: v0.0.1
 
 patchesStrategicMerge:
   - "deployment.yaml"
