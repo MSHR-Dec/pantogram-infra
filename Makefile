@@ -19,6 +19,9 @@ apply/grafana:
 .PHONY: apply/jaeger
 apply/jaeger:
 	kubectl kustomize manifest/jaeger/overlays/k3s/ | kubectl apply -f -
+.PHONY: apply/es
+apply/es:
+	kubectl kustomize manifest/es/overlays/k3s/ | kubectl apply -f -
 .PHONY: apply/metrics
 apply/metrics:
 	kubectl kustomize manifest/metrics_server/base | kubectl apply -f -
@@ -47,6 +50,9 @@ delete/grafana:
 .PHONY: delete/jaeger
 delete/jaeger:
 	kubectl kustomize manifest/jaeger/overlays/k3s/ | kubectl delete -f -
+.PHONY: delete/es
+delete/es:
+	kubectl kustomize manifest/es/overlays/k3s/ | kubectl delete -f -
 .PHONY: delete/metrics
 delete/metrics:
 	kubectl kustomize manifest/_metrics_server/base/ | kubectl delete -f -

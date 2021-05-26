@@ -1,0 +1,4 @@
+resources:
+  - "statefulset.yaml"
+  - "deployment.yaml"
+  - "service.yaml"
