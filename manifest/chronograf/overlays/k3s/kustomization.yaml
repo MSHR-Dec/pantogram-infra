@@ -3,15 +3,18 @@ namespace: pantogram
 bases:
 - "../../base"
 
+resources:
+- "service.yaml"
+
 images:
-- name: repository
-  newName: influxdb
-  newTag: "1.8"
+- name: repo
+  newName: chronograf
+  newTag: 1.8.8
 
 patchesStrategicMerge:
 - "deployment.yaml"
 
 secretGenerator:
-- name: influxdb
+- name: chronograf
   envs:
   - .env

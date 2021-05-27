@@ -9,5 +9,5 @@ spec:
       - name: app
         imagePullPolicy: Always
         envFrom:
-          - secretRef:
-              name: datastore
+        - secretRef:
+            name: datastore

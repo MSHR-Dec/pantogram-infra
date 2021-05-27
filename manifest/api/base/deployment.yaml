@@ -15,22 +15,22 @@ spec:
       - name: envoy
         image: envoy-repo:latest
         volumeMounts:
-          - name: envoy
-            mountPath: /etc/envoy
+        - name: envoy
+          mountPath: /etc/envoy
         command: ["envoy", "-c", "/etc/envoy/envoy.yaml", "--service-cluster", "api", "--service-node", "api"]
         ports:
-          - name: envoy
-            containerPort: 15000
-          - name: envoy-admin
-            containerPort: 10001
+        - name: envoy
+          containerPort: 15000
+        - name: envoy-admin
+          containerPort: 10001
       - name: app
         image: app-repo:tag
         env:
-          - name: DATASTORE
-            value: "localhost:15000"
-          - name: TIMESERIES
-            value: "localhost:15000"
+        - name: DATASTORE
+          value: "localhost:15000"
+        - name: TIMESERIES
+          value: "localhost:15000"
       volumes:
-        - name: envoy
-          configMap:
-            name: envoy-api
+      - name: envoy
+        configMap:
+          name: envoy-api

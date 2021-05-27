@@ -1,8 +1,8 @@
 namespace: pantogram-system
 
 bases:
-  - "../../base"
+- "../../base"
 
 images:
-  - name: fluent/fluent-bit
-    newTag: 1.7.7
+- name: fluent/fluent-bit
+  newTag: 1.7.7

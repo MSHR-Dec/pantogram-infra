@@ -12,10 +12,10 @@ spec:
       - name: grafana
         image: repository:tag
         volumeMounts:
-          - mountPath: /etc/grafana/provisioning/datasources/influxdb.yaml
-            name: influxdb
-            subPath: influxdb.yaml
+        - mountPath: /etc/grafana/provisioning/datasources/influxdb.yaml
+          name: influxdb
+          subPath: influxdb.yaml
       volumes:
-        - name: influxdb
-          configMap:
-            name: influxdb
+      - name: influxdb
+        configMap:
+          name: influxdb

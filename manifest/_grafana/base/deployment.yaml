@@ -15,4 +15,4 @@ spec:
       - name: grafana
         image: repository:tag
         ports:
-          - containerPort: 3000
+        - containerPort: 3000

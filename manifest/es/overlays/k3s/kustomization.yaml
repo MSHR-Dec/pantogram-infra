@@ -4,9 +4,9 @@ bases:
   - "../../base"
 
 images:
-  - name: es-repo
-    newName: docker.elastic.co/elasticsearch/elasticsearch
-    newTag: 7.10.2
-  - name: kibana-repo
-    newName: docker.elastic.co/kibana/kibana-oss
-    newTag: 7.10.2
+- name: es-repo
+  newName: docker.elastic.co/elasticsearch/elasticsearch
+  newTag: 7.10.2
+- name: kibana-repo
+  newName: docker.elastic.co/kibana/kibana-oss
+  newTag: 7.10.2

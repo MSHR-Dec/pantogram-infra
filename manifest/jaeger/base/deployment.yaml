@@ -15,14 +15,14 @@ spec:
       - name: envoy
         image: jaeger-repo:tag
         env:
-          - name: COLLECTOR_ZIPKIN_HOST_PORT
-            value: ":9411"
-          - name: MEMORY_MAX_TRACES
-            value: "100"
-          - name: QUERY_MAX_CLOCK_SKEW_ADJUSTMENT
-            value: 1s
+        - name: COLLECTOR_ZIPKIN_HOST_PORT
+          value: ":9411"
+        - name: MEMORY_MAX_TRACES
+          value: "100"
+        - name: QUERY_MAX_CLOCK_SKEW_ADJUSTMENT
+          value: 1s
         ports:
-          - name: jaeger
-            containerPort: 16686
-          - name: zipkin
-            containerPort: 9411
+        - name: jaeger
+          containerPort: 16686
+        - name: zipkin
+          containerPort: 9411

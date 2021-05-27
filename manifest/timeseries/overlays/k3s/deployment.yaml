@@ -9,5 +9,5 @@ spec:
       - name: app
         imagePullPolicy: Always
         envFrom:
-          - secretRef:
-              name: timeseries
+        - secretRef:
+            name: timeseries

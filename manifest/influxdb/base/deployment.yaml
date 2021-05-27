@@ -15,11 +15,11 @@ spec:
       - name: influxdb
         image: repository:tag
         ports:
-          - containerPort: 8086
+        - containerPort: 8086
         volumeMounts:
-          - mountPath: /var/lib/influxdb
-            name: data
+        - mountPath: /var/lib/influxdb
+          name: data
       volumes:
-        - name: data
-          emptyDir:
-            {}
+      - name: data
+        emptyDir:
+          {}

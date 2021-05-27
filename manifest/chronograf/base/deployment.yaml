@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chronograf
+  labels:
+    app: chronograf
+spec:
+  strategy:
+    type: "Recreate"
+  selector:
+    matchLabels:
+      app: chronograf
+  replicas: 1
+  template:
+    metadata:
+      name: chronograf
+      labels:
+        app: chronograf
+    spec:
+      containers:
+      - name: chronograf
+        image: repo:tag
+        ports:
+          - containerPort: 8888
+        volumeMounts:
+          - name: data
+            mountPath: /var/lib/chronograf
+      volumes:
+        - name: data
+          emptyDir:
+            {}

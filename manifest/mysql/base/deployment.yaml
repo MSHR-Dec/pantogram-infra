@@ -15,59 +15,59 @@ spec:
       - name: mysql
         image: repository:tag
         ports:
-          - containerPort: 3306
+        - containerPort: 3306
         volumeMounts:
-          - mountPath: /var/lib/mysql
-            name: data
-          - mountPath: /etc/mysql/conf.d/my.cnf
-            name: my-cnf
-            subPath: my.cnf
-          - mountPath: /docker-entrypoint-initdb.d/001_regions.sql
-            name: 001-regions
-            subPath: 001_regions.sql
-          - mountPath: /docker-entrypoint-initdb.d/002_prefectures.sql
-            name: 002-prefectures
-            subPath: 002_prefectures.sql
-          - mountPath: /docker-entrypoint-initdb.d/003_companies.sql
-            name: 003-companies
-            subPath: 003_companies.sql
-          - mountPath: /docker-entrypoint-initdb.d/004_routes.sql
-            name: 004-routes
-            subPath: 004_routes.sql
-          - mountPath: /docker-entrypoint-initdb.d/005_routes_prefectures.sql
-            name: 005-routes-prefectures
-            subPath: 005_routes_prefectures.sql
-          - mountPath: /docker-entrypoint-initdb.d/006_daily_route_summaries.sql
-            name: 006-daily-route-summaries
-            subPath: 006-daily-route-summaries
-          - mountPath: /docker-entrypoint-initdb.d/007_delay_starts.sql
-            name: 007-delay-starts
-            subPath: 007_delay_starts.sql
+        - mountPath: /var/lib/mysql
+          name: data
+        - mountPath: /etc/mysql/conf.d/my.cnf
+          name: my-cnf
+          subPath: my.cnf
+        - mountPath: /docker-entrypoint-initdb.d/001_regions.sql
+          name: 001-regions
+          subPath: 001_regions.sql
+        - mountPath: /docker-entrypoint-initdb.d/002_prefectures.sql
+          name: 002-prefectures
+          subPath: 002_prefectures.sql
+        - mountPath: /docker-entrypoint-initdb.d/003_companies.sql
+          name: 003-companies
+          subPath: 003_companies.sql
+        - mountPath: /docker-entrypoint-initdb.d/004_routes.sql
+          name: 004-routes
+          subPath: 004_routes.sql
+        - mountPath: /docker-entrypoint-initdb.d/005_routes_prefectures.sql
+          name: 005-routes-prefectures
+          subPath: 005_routes_prefectures.sql
+        - mountPath: /docker-entrypoint-initdb.d/006_daily_route_summaries.sql
+          name: 006-daily-route-summaries
+          subPath: 006-daily-route-summaries
+        - mountPath: /docker-entrypoint-initdb.d/007_delay_starts.sql
+          name: 007-delay-starts
+          subPath: 007_delay_starts.sql
       volumes:
-        - name: data
-          emptyDir:
-            {}
-        - name: my-cnf
-          configMap:
-            name: my-cnf
-        - name: 001-regions
-          configMap:
-            name: 001-regions
-        - name: 002-prefectures
-          configMap:
-            name: 002-prefectures
-        - name: 003-companies
-          configMap:
-            name: 003-companies
-        - name: 004-routes
-          configMap:
-            name: 004-routes
-        - name: 005-routes-prefectures
-          configMap:
-            name: 005-routes-prefectures
-        - name: 006-daily-route-summaries
-          configMap:
-            name: 006-daily-route-summaries
-        - name: 007-delay-starts
-          configMap:
-            name: 007-delay-starts
+      - name: data
+        emptyDir:
+          {}
+      - name: my-cnf
+        configMap:
+          name: my-cnf
+      - name: 001-regions
+        configMap:
+          name: 001-regions
+      - name: 002-prefectures
+        configMap:
+          name: 002-prefectures
+      - name: 003-companies
+        configMap:
+          name: 003-companies
+      - name: 004-routes
+        configMap:
+          name: 004-routes
+      - name: 005-routes-prefectures
+        configMap:
+          name: 005-routes-prefectures
+      - name: 006-daily-route-summaries
+        configMap:
+          name: 006-daily-route-summaries
+      - name: 007-delay-starts
+        configMap:
+          name: 007-delay-starts

@@ -9,7 +9,7 @@ spec:
       - name: mysql
         imagePullPolicy: Always
         envFrom:
-          - secretRef:
-              name: mysql
+        - secretRef:
+            name: mysql
         securityContext:
           runAsUser: 1000

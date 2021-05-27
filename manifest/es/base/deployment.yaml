@@ -19,32 +19,32 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - name: kibana
-          image: kibana-repo:tag
-          # resources:
-          #   # need more cpu upon initialization, therefore burstable class
-          #   limits:
-          #     cpu: 1000m
-          #   requests:
-          #     cpu: 100m
-          env:
-            - name: ELASTICSEARCH_HOSTS
-              value: http://elasticsearch:9200
-            - name: SERVER_NAME
-              value: kibana
-          ports:
-            - containerPort: 5601
-              name: ui
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /api/status
-              port: ui
-            initialDelaySeconds: 5
-            timeoutSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /api/status
-              port: ui
-            initialDelaySeconds: 5
-            timeoutSeconds: 10
+      - name: kibana
+        image: kibana-repo:tag
+        # resources:
+        #   # need more cpu upon initialization, therefore burstable class
+        #   limits:
+        #     cpu: 1000m
+        #   requests:
+        #     cpu: 100m
+        env:
+        - name: ELASTICSEARCH_HOSTS
+          value: http://elasticsearch:9200
+        - name: SERVER_NAME
+          value: kibana
+        ports:
+        - containerPort: 5601
+          name: ui
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /api/status
+            port: ui
+          initialDelaySeconds: 5
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/status
+            port: ui
+          initialDelaySeconds: 5
+          timeoutSeconds: 10
