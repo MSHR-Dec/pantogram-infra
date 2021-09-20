@@ -3,13 +3,25 @@ namespace: pantogram
 bases:
 - "../../base"
 
+patchesJson6902:
+- target:
+    group: apps
+    kind: StatefulSet
+    name: influxdb
+    version: v1
+  patch: |-
+    - op: add
+      path: /spec/template/volumeClaimTemplates/0/metadata/namespace
+      value: "pantogram"
+
 images:
 - name: repository
   newName: influxdb
   newTag: "1.8"
 
 patchesStrategicMerge:
-- "deployment.yaml"
+- "statefulset.yaml"
+# - "deployment.yaml"
 
 secretGenerator:
 - name: influxdb

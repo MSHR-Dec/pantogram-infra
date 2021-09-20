@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: influxdb
+spec:
+  serviceName: influxdb
+  template:
+    spec:
+      containers:
+        - name: influxdb
+          envFrom:
+          - secretRef:
+              name: influxdb

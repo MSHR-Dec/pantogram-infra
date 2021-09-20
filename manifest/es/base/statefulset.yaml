@@ -50,7 +50,7 @@ spec:
           initialDelaySeconds: 5
           timeoutSeconds: 10
         volumeMounts:
-        - name: elasticsearch
+        - name: data
           mountPath: /data
         env:
         - name: HOSTNAME_NAME
@@ -73,9 +73,15 @@ spec:
         #       fieldPath: metadata.namespace
         # - name: "MINIMUM_MASTER_NODES"
         #   value: "1"
-    volumes:
-    - name: elasticsearch
-      emptyDir: {}
+    volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+        - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 32Gi
       # Elasticsearch requires vm.max_map_count to be at least 262144.
       # If your OS already sets up this number to a higher value, feel free
       # to remove this init container.

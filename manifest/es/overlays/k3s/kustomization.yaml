@@ -3,6 +3,17 @@ namespace: pantogram-system
 bases:
   - "../../base"
 
+patchesJson6902:
+- target:
+    group: apps
+    kind: StatefulSet
+    name: elasticsearch
+    version: v1
+  patch: |-
+    - op: add
+      path: /spec/template/volumeClaimTemplates/0/metadata/namespace
+      value: "pantogram-system"
+
 images:
 - name: es-repo
   newName: docker.elastic.co/elasticsearch/elasticsearch
